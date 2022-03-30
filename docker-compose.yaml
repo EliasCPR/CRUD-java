@@ -1,0 +1,46 @@
+version: '2'
+
+services:
+# ===================================================================
+  crud-java:
+    container_name: crud-java
+    hostname: crud-java
+    image: crud-java:dev
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/opt/app
+    # ports:
+    #   - "3000:3000"
+    #   - "3001:3001"
+    working_dir: /opt/app/target
+    environment:
+      DB_URI: jdbc:mysql://mariadb:3306/app?useSSL=false
+      DB_USER: app
+      DB_PASSWORD: app 
+    networks:
+      - crud-java-private-network
+    # entrypoint: cliente-0.0.1-SNAPSHOT.jar
+    depends_on: 
+      - mariadb
+
+  mariadb:
+    container_name: mariadb
+    hostname: mariadb
+    image: mariadb
+    environment:
+      MARIADB_USER: app
+      MARIADB_PASSWORD: app
+      MARIADB_DATABASE: app
+      MARIADB_ROOT_PASSWORD: qqum
+    ports:
+      - 3306:3306
+    networks:
+      - crud-java-private-network
+
+# ===================================================================
+networks:
+  crud-java-private-network:
+    driver: bridge
